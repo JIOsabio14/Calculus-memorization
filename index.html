@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Calculus Practice</title>
 <script>
   window.MathJax = {
@@ -12,51 +12,58 @@
 </script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   :root {
     --bg: #0f1117; --panel: #161922; --panel-2: #1a1e29;
     --border: #2a3040; --text: #e5e9f0; --muted: #8b93a7;
     --accent: #f89820; --ok: #3fb950; --bad: #f85149; --blue: #58a6ff;
   }
+  html, body { overscroll-behavior-y: contain; }
   body {
     margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    font-size: 15px; line-height: 1.5; padding: 24px 20px 60px;
+    font-size: 15px; line-height: 1.5; padding: 16px 16px 40px;
   }
+  body.s6-active { padding-bottom: 140px; }
   .app { max-width: 1240px; margin: 0 auto; }
+
   .top {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
-    gap: 16px; flex-wrap: wrap;
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    gap: 12px; flex-wrap: wrap;
   }
-  .top h1 { font-size: 19px; font-weight: 700; margin: 0; }
+  .top h1 { font-size: 18px; font-weight: 700; margin: 0; }
   .top-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
   .tab-btn {
-    font-family: inherit; font-size: 13.5px; font-weight: 600;
-    padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border);
     background: var(--panel); color: var(--muted); cursor: pointer; transition: all 0.15s;
+    min-height: 36px;
   }
   .tab-btn:hover { border-color: var(--accent); color: var(--text); }
   .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #1a1206; }
   .reset-btn {
     font-family: inherit; font-size: 12.5px; font-weight: 600;
     padding: 7px 12px; border-radius: 6px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s;
+    background: transparent; color: var(--muted); cursor: pointer;
+    min-height: 34px;
   }
   .reset-btn:hover { border-color: var(--bad); color: var(--bad); }
+
   .stage { display: none; }
   .stage.show { display: block; }
+
   .q-counter {
     font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;
-    margin-bottom: 14px; text-align: right;
-    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; display: flex; justify-content: space-between;
+    align-items: center; gap: 10px; flex-wrap: wrap;
   }
-  .stat-line { color: var(--muted); font-size: 12.5px; }
   .stat-line strong { color: var(--ok); font-weight: 700; }
-  .nav { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+
+  .nav { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
   .nav button {
-    width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--border);
+    width: 36px; height: 36px; border-radius: 6px; border: 1px solid var(--border);
     background: var(--panel); color: var(--muted); font-family: inherit;
     font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
   }
@@ -65,73 +72,89 @@
   .nav button.solved { border-color: var(--ok); color: var(--ok); }
   .nav button.solved.current { background: var(--accent); border-color: var(--accent); color: #1a1206; }
   .nav button.missed { border-color: var(--bad); color: var(--bad); }
+
   .board {
     display: grid; grid-template-columns: 1.15fr 0.85fr;
-    gap: 20px; align-items: start;
+    gap: 18px; align-items: start;
   }
   @media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
+
   .panel {
     background: var(--panel); border: 1px solid var(--border);
-    border-radius: 8px; overflow: hidden; margin-bottom: 20px;
+    border-radius: 8px; overflow: hidden; margin-bottom: 18px;
   }
   .panel-head {
-    padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--panel-2);
+    padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2);
   }
   .panel-head h2 { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
-  .panel-head p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
-  .panel-body { padding: 18px; }
+  .panel-head p { margin: 0; font-size: 13px; color: var(--muted); }
+  .panel-body { padding: 16px; }
+
   .problem-display {
     background: #0a0d14; border: 1px solid #1d2740; border-radius: 10px;
-    padding: 26px 24px; margin-bottom: 18px; font-size: 22px;
-    text-align: center; line-height: 1.7; min-height: 90px;
+    padding: 22px 18px; margin-bottom: 16px; font-size: 20px;
+    text-align: center; line-height: 1.7; min-height: 80px;
     display: flex; align-items: center; justify-content: center;
+    overflow-x: auto;
   }
-  .answer-row {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap;
+
+  .answer-label { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+
+  /* Option buttons — replaces <select> so LaTeX renders properly */
+  .options-grid {
+    display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px;
   }
-  .answer-row label { font-size: 13.5px; color: var(--muted); font-weight: 600; }
-  .blank-select {
-    font-family: inherit; font-size: 15px; font-weight: 600;
-    padding: 10px 14px; border-radius: 6px; border: 1px solid var(--accent);
-    background: #1a1206; color: var(--accent); cursor: pointer; outline: none;
-    min-width: 260px; max-width: 100%;
+  .option-btn {
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    padding: 12px 16px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: var(--panel-2); color: var(--text);
+    cursor: pointer; text-align: left; transition: all 0.15s;
+    min-height: 48px; line-height: 1.4;
+    display: flex; align-items: center;
   }
-  .blank-select:focus { box-shadow: 0 0 0 2px rgba(248, 152, 32, 0.25); }
-  .blank-select.correct { border-color: var(--ok); background: rgba(63, 185, 80, 0.1); color: var(--ok); }
-  .blank-select.wrong { border-color: var(--bad); background: rgba(248, 81, 73, 0.1); color: var(--bad); }
-  .controls { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .option-btn:hover { border-color: var(--accent); background: rgba(248,152,32,0.06); }
+  .option-btn.selected {
+    border-color: var(--accent); background: rgba(248,152,32,0.12); color: var(--accent);
+  }
+  .option-btn.correct {
+    border-color: var(--ok); background: rgba(63,185,80,0.1); color: var(--ok);
+  }
+  .option-btn.wrong {
+    border-color: var(--bad); background: rgba(248,81,73,0.1); color: var(--bad);
+  }
+  .option-btn:disabled { cursor: default; }
+
+  .controls { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .btn {
     font-family: inherit; font-size: 14px; font-weight: 600;
-    padding: 10px 20px; border-radius: 6px; border: 1px solid var(--border);
+    padding: 11px 20px; border-radius: 6px; border: 1px solid var(--border);
     background: var(--panel-2); color: var(--text); cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s, background 0.15s; min-height: 44px;
   }
   .btn:hover { border-color: var(--accent); }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #1a1206; }
   .btn.primary:hover { filter: brightness(1.08); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn:disabled:hover { border-color: var(--border); }
+
   .feedback {
-    margin-top: 16px; padding: 14px 16px; border-radius: 6px;
+    margin-top: 14px; padding: 13px 15px; border-radius: 6px;
     font-size: 13.5px; line-height: 1.7; border: 1px solid transparent; display: none;
   }
   .feedback.show { display: block; }
-  .feedback.ok { background: rgba(63, 185, 80, 0.08); border-color: rgba(63, 185, 80, 0.35); color: #b7f0bd; }
-  .feedback.bad { background: rgba(248, 81, 73, 0.08); border-color: rgba(248, 81, 73, 0.35); color: #ffc1bd; }
-  .feedback.warn { background: rgba(248, 152, 32, 0.08); border-color: rgba(248, 152, 32, 0.35); color: #ffd9a8; }
-  .feedback .title { font-weight: 700; display: block; margin-bottom: 8px; }
-  .feedback code {
-    font-family: ui-monospace, Menlo, Consolas, monospace;
-    background: rgba(255, 255, 255, 0.08); padding: 2px 7px; border-radius: 4px; font-size: 13px;
-  }
+  .feedback.ok { background: rgba(63,185,80,0.08); border-color: rgba(63,185,80,0.35); color: #b7f0bd; }
+  .feedback.bad { background: rgba(248,81,73,0.08); border-color: rgba(248,81,73,0.35); color: #ffc1bd; }
+  .feedback.warn { background: rgba(248,152,32,0.08); border-color: rgba(248,152,32,0.35); color: #ffd9a8; }
+  .feedback .title { font-weight: 700; display: block; margin-bottom: 6px; }
+
   .ref-body {
-    padding: 16px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    padding: 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 13px; line-height: 2; background: #0a0d14; color: #c9d4e8;
-    min-height: 120px;
+    min-height: 100px;
   }
   .ref-body .ref-line { padding: 3px 0; color: #b9c5dc; }
   .ref-body .ref-head {
-    color: var(--accent); font-weight: 700; margin-top: 14px; margin-bottom: 6px;
+    color: var(--accent); font-weight: 700; margin-top: 12px; margin-bottom: 6px;
     font-size: 12px; letter-spacing: 0.6px; text-transform: uppercase;
   }
   .ref-body .ref-head:first-child { margin-top: 0; }
@@ -139,24 +162,29 @@
     padding: 26px 20px; text-align: center; color: var(--muted);
     font-size: 13px; line-height: 1.7; font-family: system-ui, sans-serif;
   }
-  .ref-locked .lock-icon { font-size: 24px; display: block; margin-bottom: 8px; opacity: 0.5; }
+  .ref-locked .lock-icon { font-size: 22px; display: block; margin-bottom: 6px; opacity: 0.5; }
 
-  /* Unit circle */
+  /* =========================================================
+     Unit circle
+     ========================================================= */
   .uc-progress {
     display: inline-block; font-size: 13px; font-weight: 700; color: var(--accent);
-    background: rgba(248, 152, 32, 0.1); border: 1px solid rgba(248, 152, 32, 0.35);
-    padding: 4px 12px; border-radius: 999px; margin-bottom: 16px; font-variant-numeric: tabular-nums;
+    background: rgba(248,152,32,0.1); border: 1px solid rgba(248,152,32,0.35);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
   }
   .uc-instruction {
-    font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.6;
+    font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.6;
   }
-  .uc-instruction code {
-    font-family: ui-monospace, Menlo, Consolas, monospace;
-    background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;
-    color: var(--text);
+  .uc-instruction strong { color: var(--text); }
+
+  .uc-stage-wrap {
+    overflow: hidden; padding: 4px 0; position: relative;
   }
-  .uc-stage-wrap { overflow-x: auto; padding: 6px 0; }
-  .uc-stage { position: relative; width: 1000px; height: 1000px; margin: 0 auto; }
+  .uc-stage {
+    position: relative; width: 1000px; height: 1000px;
+    margin: 0 auto; transform-origin: top center;
+  }
   .uc-axis-h {
     position: absolute; left: 30px; right: 30px; top: 499px;
     height: 1.5px; background: #2a3040;
@@ -182,7 +210,7 @@
   }
   .uc-angle-line {
     position: absolute; left: 500px; top: 500px; height: 1px;
-    background: rgba(139, 147, 167, 0.14);
+    background: rgba(139,147,167,0.14);
     transform-origin: 0 0; pointer-events: none;
   }
   .uc-dot {
@@ -200,60 +228,109 @@
   }
   .uc-angle-label .deg-top { color: #f89820; display: block; }
   .uc-angle-label .rad { color: #58a6ff; display: block; font-size: 11.5px; }
+
   .uc-pair {
     position: absolute; transform: translate(-50%, -50%);
-    display: flex; align-items: center; gap: 4px; z-index: 5;
+    display: flex; align-items: center; gap: 3px; z-index: 5;
   }
   .uc-pair .comma {
-    color: var(--muted); font-weight: 700; font-size: 13px;
+    color: var(--muted); font-weight: 700; font-size: 11px;
     font-family: ui-monospace, Menlo, Consolas, monospace;
+    line-height: 1;
   }
   .uc-slot {
-    width: 46px; padding: 3px 2px;
+    width: 34px; padding: 3px 1px;
     font-family: ui-monospace, Menlo, Consolas, monospace;
     background: #0a0d14;
-    border: 1.5px dashed rgba(139, 147, 167, 0.5);
+    border: 1.5px dashed rgba(139,147,167,0.5);
     border-radius: 5px; text-align: center;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    cursor: pointer; overflow: hidden;
+    touch-action: manipulation;
   }
   .uc-slot .uc-slot-value {
-    display: block; font-size: 11.5px; font-weight: 700;
-    color: var(--muted); line-height: 1.5;
+    display: block; font-size: 10px; font-weight: 700;
+    color: var(--muted); line-height: 1.4;
+    letter-spacing: -0.2px;
   }
-  .uc-slot.dragover { border-color: var(--accent); background: rgba(248, 152, 32, 0.15); border-style: solid; }
-  .uc-slot.filled { border: 1.5px solid var(--blue); background: rgba(88, 166, 255, 0.1); }
+  .uc-slot.dragover {
+    border-color: var(--accent); background: rgba(248,152,32,0.18);
+    border-style: solid;
+  }
+  .uc-slot.filled {
+    border: 1.5px solid var(--blue); background: rgba(88,166,255,0.12);
+  }
   .uc-slot.filled .uc-slot-value { color: var(--blue); }
   .uc-slot.wrong {
-    border-color: var(--bad); background: rgba(248, 81, 73, 0.15);
+    border-color: var(--bad); background: rgba(248,81,73,0.18);
     animation: shake 0.4s;
   }
   @keyframes shake {
     0%,100% { transform: translateX(0); }
-    25%     { transform: translateX(-4px); }
-    75%     { transform: translateX(4px); }
+    25%     { transform: translateX(-3px); }
+    75%     { transform: translateX(3px); }
   }
-  .uc-bank-wrap {
-    margin-top: 26px; padding-top: 20px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+
+  /* =========================================================
+     FIXED bottom value bank (Stage 6 only)
+     ========================================================= */
+  .fixed-bank {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, #1a1e29 0%, #141824 100%);
+    border-top: 1.5px solid var(--accent);
+    padding: 10px 14px 12px;
+    z-index: 100;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    touch-action: pan-y;
   }
-  .uc-bank-label {
-    font-size: 12.5px; font-weight: 700; letter-spacing: 0.6px;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+  .fixed-bank.visible { transform: translateY(0); }
+  .fixed-bank-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px;
   }
-  .uc-bank-hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
-  .uc-bank { display: flex; flex-wrap: wrap; gap: 10px; }
+  .fixed-bank-label .hint {
+    font-size: 11px; font-weight: 500; letter-spacing: 0;
+    text-transform: none; color: var(--muted);
+  }
+  .fixed-bank-chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    max-height: 90px; overflow-y: auto;
+  }
   .uc-chip {
     font-family: ui-monospace, Menlo, Consolas, monospace;
     font-size: 15px; font-weight: 700;
-    padding: 10px 18px; border-radius: 6px;
-    border: 1px solid var(--accent); background: #1a1206; color: var(--accent);
-    cursor: grab; user-select: none; white-space: nowrap;
-    transition: transform 0.1s, box-shadow 0.15s;
+    padding: 9px 14px; border-radius: 6px;
+    border: 1.5px solid var(--accent); background: #1a1206; color: var(--accent);
+    cursor: pointer; user-select: none; white-space: nowrap;
+    transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+    min-height: 40px; min-width: 50px;
+    display: inline-flex; align-items: center; justify-content: center;
+    touch-action: manipulation;
   }
-  .uc-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(248, 152, 32, 0.25); }
-  .uc-chip:active { cursor: grabbing; }
-  .uc-chip.dragging { opacity: 0.5; }
+  .uc-chip:hover { transform: translateY(-1px); }
+  .uc-chip:active { transform: scale(0.96); }
+  .uc-chip.selected {
+    background: var(--accent); color: #1a1206;
+    box-shadow: 0 0 0 3px rgba(248,152,32,0.4);
+  }
+  .uc-chip.dragging { opacity: 0.4; }
+
   .hidden { display: none !important; }
+
+  @media (max-width: 700px) {
+    body { padding: 12px 12px 30px; }
+    body.s6-active { padding-bottom: 160px; }
+    .top h1 { font-size: 16px; }
+    .tab-btn { font-size: 12px; padding: 7px 11px; }
+    .problem-display { font-size: 17px; padding: 18px 12px; }
+    .uc-chip { font-size: 14px; padding: 8px 12px; min-height: 38px; }
+    .fixed-bank-chips { max-height: 120px; }
+  }
 </style>
 </head>
 <body>
@@ -263,29 +340,27 @@
     <h1>Calculus I Memory Test</h1>
     <div class="top-right">
       <nav class="tabs">
-        <button class="tab-btn active" data-stage="s1">Trig Foundations</button>
+        <button class="tab-btn active" data-stage="s1">Trig</button>
         <button class="tab-btn" data-stage="s2">Identities</button>
-        <button class="tab-btn" data-stage="s3">Limits &amp; Continuity</button>
+        <button class="tab-btn" data-stage="s3">Limits</button>
         <button class="tab-btn" data-stage="s4">Derivatives</button>
         <button class="tab-btn" data-stage="s5">Chain Rule</button>
         <button class="tab-btn" data-stage="s6">Unit Circle</button>
       </nav>
-      <button class="reset-btn" id="resetAll">Reset progress</button>
+      <button class="reset-btn" id="resetAll">Reset</button>
     </div>
   </div>
 
   <section id="s1" class="stage show">
-    <div class="q-counter"><span class="stat-line" id="s1-stat"></span><span>Question <span id="s1-qNum">1</span> of <span id="s1-qTotal">8</span></span></div>
+    <div class="q-counter"><span class="stat-line" id="s1-stat"></span><span>Q <span id="s1-qNum">1</span> / <span id="s1-qTotal">8</span></span></div>
     <div class="nav" id="s1-nav"></div>
     <div class="board">
       <section class="panel">
         <div class="panel-head"><h2 id="s1-qTitle"></h2><p id="s1-qPrompt"></p></div>
         <div class="panel-body">
           <div class="problem-display" id="s1-problem"></div>
-          <div class="answer-row">
-            <label for="s1-blank">Your answer:</label>
-            <select id="s1-blank" class="blank-select"></select>
-          </div>
+          <div class="answer-label">Your answer:</div>
+          <div class="options-grid" id="s1-options"></div>
           <div class="controls">
             <button class="btn primary" id="s1-checkBtn">Check Answer</button>
             <button class="btn hidden" id="s1-nextBtn">Next Question</button>
@@ -301,17 +376,15 @@
   </section>
 
   <section id="s2" class="stage">
-    <div class="q-counter"><span class="stat-line" id="s2-stat"></span><span>Question <span id="s2-qNum">1</span> of <span id="s2-qTotal">8</span></span></div>
+    <div class="q-counter"><span class="stat-line" id="s2-stat"></span><span>Q <span id="s2-qNum">1</span> / <span id="s2-qTotal">8</span></span></div>
     <div class="nav" id="s2-nav"></div>
     <div class="board">
       <section class="panel">
         <div class="panel-head"><h2 id="s2-qTitle"></h2><p id="s2-qPrompt"></p></div>
         <div class="panel-body">
           <div class="problem-display" id="s2-problem"></div>
-          <div class="answer-row">
-            <label for="s2-blank">Your answer:</label>
-            <select id="s2-blank" class="blank-select"></select>
-          </div>
+          <div class="answer-label">Your answer:</div>
+          <div class="options-grid" id="s2-options"></div>
           <div class="controls">
             <button class="btn primary" id="s2-checkBtn">Check Answer</button>
             <button class="btn hidden" id="s2-nextBtn">Next Question</button>
@@ -327,17 +400,15 @@
   </section>
 
   <section id="s3" class="stage">
-    <div class="q-counter"><span class="stat-line" id="s3-stat"></span><span>Question <span id="s3-qNum">1</span> of <span id="s3-qTotal">8</span></span></div>
+    <div class="q-counter"><span class="stat-line" id="s3-stat"></span><span>Q <span id="s3-qNum">1</span> / <span id="s3-qTotal">8</span></span></div>
     <div class="nav" id="s3-nav"></div>
     <div class="board">
       <section class="panel">
         <div class="panel-head"><h2 id="s3-qTitle"></h2><p id="s3-qPrompt"></p></div>
         <div class="panel-body">
           <div class="problem-display" id="s3-problem"></div>
-          <div class="answer-row">
-            <label for="s3-blank">Your answer:</label>
-            <select id="s3-blank" class="blank-select"></select>
-          </div>
+          <div class="answer-label">Your answer:</div>
+          <div class="options-grid" id="s3-options"></div>
           <div class="controls">
             <button class="btn primary" id="s3-checkBtn">Check Answer</button>
             <button class="btn hidden" id="s3-nextBtn">Next Question</button>
@@ -353,17 +424,15 @@
   </section>
 
   <section id="s4" class="stage">
-    <div class="q-counter"><span class="stat-line" id="s4-stat"></span><span>Question <span id="s4-qNum">1</span> of <span id="s4-qTotal">8</span></span></div>
+    <div class="q-counter"><span class="stat-line" id="s4-stat"></span><span>Q <span id="s4-qNum">1</span> / <span id="s4-qTotal">8</span></span></div>
     <div class="nav" id="s4-nav"></div>
     <div class="board">
       <section class="panel">
         <div class="panel-head"><h2 id="s4-qTitle"></h2><p id="s4-qPrompt"></p></div>
         <div class="panel-body">
           <div class="problem-display" id="s4-problem"></div>
-          <div class="answer-row">
-            <label for="s4-blank">Your answer:</label>
-            <select id="s4-blank" class="blank-select"></select>
-          </div>
+          <div class="answer-label">Your answer:</div>
+          <div class="options-grid" id="s4-options"></div>
           <div class="controls">
             <button class="btn primary" id="s4-checkBtn">Check Answer</button>
             <button class="btn hidden" id="s4-nextBtn">Next Question</button>
@@ -379,17 +448,15 @@
   </section>
 
   <section id="s5" class="stage">
-    <div class="q-counter"><span class="stat-line" id="s5-stat"></span><span>Question <span id="s5-qNum">1</span> of <span id="s5-qTotal">8</span></span></div>
+    <div class="q-counter"><span class="stat-line" id="s5-stat"></span><span>Q <span id="s5-qNum">1</span> / <span id="s5-qTotal">8</span></span></div>
     <div class="nav" id="s5-nav"></div>
     <div class="board">
       <section class="panel">
         <div class="panel-head"><h2 id="s5-qTitle"></h2><p id="s5-qPrompt"></p></div>
         <div class="panel-body">
           <div class="problem-display" id="s5-problem"></div>
-          <div class="answer-row">
-            <label for="s5-blank">Your answer:</label>
-            <select id="s5-blank" class="blank-select"></select>
-          </div>
+          <div class="answer-label">Your answer:</div>
+          <div class="options-grid" id="s5-options"></div>
           <div class="controls">
             <button class="btn primary" id="s5-checkBtn">Check Answer</button>
             <button class="btn hidden" id="s5-nextBtn">Next Question</button>
@@ -407,21 +474,16 @@
   <section id="s6" class="stage">
     <section class="panel">
       <div class="panel-head">
-        <h2>Unit Circle — Drag values into the (cos, sin) slots</h2>
-        <p>Each angle shows its degree and radian. Fill the <strong>cos</strong> (left) and <strong>sin</strong> (right) slot next to it.</p>
+        <h2>Unit Circle</h2>
+        <p>Tap a value chip at the bottom, then tap a slot on the circle. The <strong>left slot</strong> is cos, the <strong>right slot</strong> is sin.</p>
       </div>
       <div class="panel-body">
         <div class="uc-progress" id="s6-progress">0 / 32 placed</div>
         <div class="uc-instruction">
-          Each chip can be used as many times as you need. Drop a value into the correct slot and it locks in.
+          Each chip can be used as many times as you need. Correct drops lock in blue.
         </div>
-        <div class="uc-stage-wrap">
+        <div class="uc-stage-wrap" id="s6-stage-wrap">
           <div class="uc-stage" id="s6-stage"></div>
-        </div>
-        <div class="uc-bank-wrap">
-          <div class="uc-bank-label">Value bank</div>
-          <div class="uc-bank-hint">Only 9 unique values. Drag the same chip as many times as you want.</div>
-          <div class="uc-bank" id="s6-bank"></div>
         </div>
         <div class="feedback" id="s6-feedback"></div>
       </div>
@@ -430,35 +492,32 @@
 
 </div>
 
+<!-- Fixed bottom value bank (Stage 6 only) -->
+<div class="fixed-bank" id="fixedBank">
+  <div class="fixed-bank-label">
+    <span>Value bank</span>
+    <span class="hint" id="fixedBankHint">Tap a chip, then tap a slot</span>
+  </div>
+  <div class="fixed-bank-chips" id="s6-bank"></div>
+</div>
+
 <script>
 /* =========================================================
-   Storage helpers
+   Storage
    ========================================================= */
-var STORAGE_KEY = "calc1_memory_v1";
-
+var STORAGE_KEY = "calc1_memory_v2";
 function loadProgress() {
-  try {
-    var raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch (e) { return null; }
+  try { var raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : null; }
+  catch (e) { return null; }
 }
-
 function saveProgress(data) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
 }
-
 function clearProgress() {
   try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
 }
 
-/* Global progress state */
-var PROGRESS = loadProgress() || {
-  solved: {},     /* stageId -> array of booleans */
-  missed: {},     /* stageId -> { questionIndex: missCount } */
-  attempts: {}    /* stageId -> { questionIndex: attempts } */
-};
-
+var PROGRESS = loadProgress() || { solved: {}, missed: {}, attempts: {} };
 function getSolved(stageId, count) {
   if (!PROGRESS.solved[stageId]) PROGRESS.solved[stageId] = new Array(count).fill(false);
   return PROGRESS.solved[stageId];
@@ -473,7 +532,7 @@ function getAttempts(stageId) {
 }
 
 /* =========================================================
-   General helpers
+   Helpers
    ========================================================= */
 var $ = function (id) { return document.getElementById(id); };
 
@@ -504,15 +563,14 @@ function buildReference(items) {
     return '<div class="ref-line">' + esc(it.text) + '</div>';
   }).join("");
 }
-
-/* Randomize question order per session (not persisted) */
 function shuffledOrder(n) {
-  var arr = [];
-  for (var i = 0; i < n; i++) arr.push(i);
+  var arr = []; for (var i = 0; i < n; i++) arr.push(i);
   return shuffle(arr);
 }
 
-/* Tabs */
+/* =========================================================
+   Tabs
+   ========================================================= */
 var tabButtons = document.querySelectorAll(".tab-btn");
 for (var i = 0; i < tabButtons.length; i++) {
   tabButtons[i].addEventListener("click", function () {
@@ -520,30 +578,35 @@ for (var i = 0; i < tabButtons.length; i++) {
     var stages = document.querySelectorAll(".stage");
     for (var k = 0; k < stages.length; k++) stages[k].classList.remove("show");
     this.classList.add("active");
-    $(this.dataset.stage).classList.add("show");
+    var stageId = this.dataset.stage;
+    $(stageId).classList.add("show");
+    document.body.classList.toggle("s6-active", stageId === "s6");
+    var bank = $("fixedBank");
+    if (stageId === "s6") bank.classList.add("visible");
+    else bank.classList.remove("visible");
     typeset();
   });
 }
 
-/* Reset all progress */
 $("resetAll").addEventListener("click", function () {
-  if (!confirm("Reset all progress? This cannot be undone.")) return;
+  if (!confirm("Reset all progress?")) return;
   clearProgress();
   location.reload();
 });
 
 /* =========================================================
-   Shared dropdown stage builder
+   Dropdown-style stage (buttons, not select)
    ========================================================= */
-function makeDropdownStage(cfg) {
+function makeChoiceStage(cfg) {
   var id = cfg.id;
   var QUESTIONS = cfg.questions;
   var N = QUESTIONS.length;
-  var ORDER = shuffledOrder(N);   /* random order this session */
-  var pos = 0;                     /* position in ORDER */
+  var ORDER = shuffledOrder(N);
+  var pos = 0;
   var solved = getSolved(id, N);
   var missed = getMissed(id);
   var attempts = getAttempts(id);
+  var selectedIdx = -1;
 
   var navEl = $(id + "-nav");
   var qNumEl = $(id + "-qNum");
@@ -552,7 +615,7 @@ function makeDropdownStage(cfg) {
   var qTitle = $(id + "-qTitle");
   var qPrompt = $(id + "-qPrompt");
   var problem = $(id + "-problem");
-  var sel = $(id + "-blank");
+  var optionsEl = $(id + "-options");
   var refBody = $(id + "-refBody");
   var refNote = $(id + "-refNote");
   var fbEl = $(id + "-feedback");
@@ -591,7 +654,7 @@ function makeDropdownStage(cfg) {
     var totalMissed = 0;
     for (var k in missed) if (missed[k] > 0 && !solved[k]) totalMissed++;
     var s = "Mastered: <strong>" + totalSolved + " / " + N + "</strong>";
-    if (totalMissed > 0) s += " &nbsp;·&nbsp; Needs review: " + totalMissed;
+    if (totalMissed > 0) s += " · Needs review: " + totalMissed;
     statEl.innerHTML = s;
   }
 
@@ -599,7 +662,6 @@ function makeDropdownStage(cfg) {
     refBody.innerHTML = '<div class="ref-locked"><span class="lock-icon">🔒</span>Answer first, then the reference appears here.</div>';
     refNote.textContent = "Locked until you check.";
   }
-
   function unlockReference(q) {
     refBody.innerHTML = buildReference(q.reference);
     refNote.textContent = "Formulas for this question.";
@@ -614,42 +676,39 @@ function makeDropdownStage(cfg) {
     qPrompt.textContent = q.prompt;
     problem.innerHTML = q.problem;
 
-    /* Reference: locked unless already solved or just answered */
-    if (solved[qIdx]) {
-      unlockReference(q);
-    } else {
-      lockReference();
-    }
+    if (solved[qIdx]) unlockReference(q);
+    else lockReference();
 
     var indices = q.options.map(function (_, i) { return i; });
     var shuffled = shuffle(indices);
-    sel.innerHTML = '<option value="-1" selected disabled>choose</option>';
-    for (var s = 0; s < shuffled.length; s++) {
-      var opt = document.createElement("option");
-      opt.value = String(shuffled[s]);
-      opt.textContent = q.options[shuffled[s]];
-      sel.appendChild(opt);
-    }
+    optionsEl.innerHTML = shuffled.map(function (origIdx) {
+      return '<button type="button" class="option-btn" data-idx="' + origIdx + '">' +
+        q.options[origIdx] + '</button>';
+    }).join("");
 
+    selectedIdx = -1;
     hideFeedback(fbEl);
     nextBtn.classList.add("hidden");
     checkBtn.disabled = false;
-    sel.classList.remove("correct", "wrong");
-    sel.disabled = false;
 
     if (solved[qIdx]) {
-      sel.value = String(q.correctIndex);
-      sel.classList.add("correct");
-      sel.disabled = true;
+      var correctBtn = optionsEl.querySelector('.option-btn[data-idx="' + q.correctIndex + '"]');
+      if (correctBtn) correctBtn.classList.add("correct");
+      optionsEl.querySelectorAll(".option-btn").forEach(function (b) { b.disabled = true; });
       checkBtn.disabled = true;
       if (pos < N - 1) nextBtn.classList.remove("hidden");
+    } else {
+      optionsEl.querySelectorAll(".option-btn").forEach(function (b) {
+        b.addEventListener("click", function () {
+          if (solved[qIdx]) return;
+          optionsEl.querySelectorAll(".option-btn").forEach(function (x) {
+            x.classList.remove("selected");
+          });
+          b.classList.add("selected");
+          selectedIdx = parseInt(b.dataset.idx, 10);
+        });
+      });
     }
-
-    sel.onchange = function () {
-      if (solved[qIdx]) return;
-      sel.classList.remove("wrong", "correct");
-      hideFeedback(fbEl);
-    };
 
     paintNav();
     updateStats();
@@ -661,32 +720,34 @@ function makeDropdownStage(cfg) {
     var q = QUESTIONS[qIdx];
     if (solved[qIdx]) return;
 
-    if (sel.value === "-1" || !sel.value) {
-      showFeedback(fbEl, "warn", "Pick an option", "Choose an answer first.");
+    if (selectedIdx < 0) {
+      showFeedback(fbEl, "warn", "Pick an option", "Tap one of the answer choices first.");
       return;
     }
 
     attempts[qIdx] = (attempts[qIdx] || 0) + 1;
+    var btn = optionsEl.querySelector('.option-btn[data-idx="' + selectedIdx + '"]');
 
-    if (parseInt(sel.value, 10) === q.correctIndex) {
-      sel.classList.add("correct");
-      sel.classList.remove("wrong");
+    if (selectedIdx === q.correctIndex) {
+      btn.classList.remove("selected");
+      btn.classList.add("correct");
       solved[qIdx] = true;
       delete missed[qIdx];
       saveProgress(PROGRESS);
       showFeedback(fbEl, "ok", "Correct.", q.explanation || "That is the standard formula.");
       unlockReference(q);
-      sel.disabled = true;
+      optionsEl.querySelectorAll(".option-btn").forEach(function (b) { b.disabled = true; });
       checkBtn.disabled = true;
       if (pos < N - 1) nextBtn.classList.remove("hidden");
       paintNav();
       updateStats();
     } else {
-      sel.classList.add("wrong");
+      btn.classList.remove("selected");
+      btn.classList.add("wrong");
       missed[qIdx] = (missed[qIdx] || 0) + 1;
       saveProgress(PROGRESS);
       showFeedback(fbEl, "bad", "Not quite.",
-        "You picked <code>" + esc(q.options[parseInt(sel.value, 10)]) + "</code>. Try again, or check the reference once you answer correctly.");
+        "That answer is not right. Try again — the reference will unlock once you get it correct.");
       paintNav();
       updateStats();
     }
@@ -702,14 +763,12 @@ function makeDropdownStage(cfg) {
 }
 
 /* =========================================================
-   STAGE 1 — Trig Foundations
+   STAGE 1 — Trig Foundations (all answers verified)
    ========================================================= */
-makeDropdownStage({
+makeChoiceStage({
   id: "s1",
   questions: [
-    {
-      title: "1. Pythagorean identity",
-      prompt: "Memorize the fundamental identity.",
+    { title: "1. Pythagorean identity", prompt: "Memorize the fundamental identity.",
       problem: "$\\sin^2\\theta + \\cos^2\\theta = \\; ?$",
       options: ["$0$", "$1$", "$2$", "$\\sin\\theta$", "$\\cos\\theta$", "$\\tan\\theta$"],
       correctIndex: 1,
@@ -718,83 +777,70 @@ makeDropdownStage({
         { type: "line", text: "sin²θ + cos²θ = 1" },
         { type: "line", text: "1 + tan²θ = sec²θ" },
         { type: "line", text: "1 + cot²θ = csc²θ" }
-      ]
-    },
-    {
-      title: "2. Tangent definition",
-      prompt: "Memorize tan θ in terms of sine and cosine.",
+      ] },
+    { title: "2. Tangent definition", prompt: "Memorize tan θ.",
       problem: "$\\tan\\theta = \\; ?$",
-      options: ["$\\dfrac{\\cos\\theta}{\\sin\\theta}$", "$\\dfrac{\\sin\\theta}{\\cos\\theta}$", "$\\sin\\theta\\cos\\theta$", "$\\dfrac{1}{\\sin\\theta}$", "$\\dfrac{1}{\\cos\\theta}$", "$\\sin\\theta + \\cos\\theta$"],
+      options: ["$\\dfrac{\\cos\\theta}{\\sin\\theta}$", "$\\dfrac{\\sin\\theta}{\\cos\\theta}$",
+                "$\\sin\\theta\\cos\\theta$", "$\\dfrac{1}{\\sin\\theta}$",
+                "$\\dfrac{1}{\\cos\\theta}$", "$\\sin\\theta + \\cos\\theta$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Quotient identities" },
         { type: "line", text: "tan θ = sin θ / cos θ" },
         { type: "line", text: "cot θ = cos θ / sin θ" }
-      ]
-    },
-    {
-      title: "3. Cosecant definition",
-      prompt: "Memorize csc θ.",
+      ] },
+    { title: "3. Cosecant definition", prompt: "Memorize csc θ.",
       problem: "$\\csc\\theta = \\; ?$",
-      options: ["$\\dfrac{1}{\\cos\\theta}$", "$\\dfrac{1}{\\tan\\theta}$", "$\\dfrac{1}{\\sin\\theta}$", "$\\sin\\theta$", "$\\cos\\theta$", "$\\dfrac{\\sin\\theta}{\\cos\\theta}$"],
+      options: ["$\\dfrac{1}{\\cos\\theta}$", "$\\dfrac{1}{\\tan\\theta}$",
+                "$\\dfrac{1}{\\sin\\theta}$", "$\\sin\\theta$",
+                "$\\cos\\theta$", "$\\dfrac{\\sin\\theta}{\\cos\\theta}$"],
       correctIndex: 2,
       reference: [
         { type: "head", text: "Reciprocal identities" },
         { type: "line", text: "csc θ = 1 / sin θ" },
         { type: "line", text: "sec θ = 1 / cos θ" },
         { type: "line", text: "cot θ = 1 / tan θ" }
-      ]
-    },
-    {
-      title: "4. Secant definition",
-      prompt: "Memorize sec θ.",
+      ] },
+    { title: "4. Secant definition", prompt: "Memorize sec θ.",
       problem: "$\\sec\\theta = \\; ?$",
-      options: ["$\\dfrac{1}{\\sin\\theta}$", "$\\dfrac{1}{\\cos\\theta}$", "$\\dfrac{1}{\\tan\\theta}$", "$\\cos\\theta$", "$\\sin\\theta$", "$\\dfrac{\\cos\\theta}{\\sin\\theta}$"],
+      options: ["$\\dfrac{1}{\\sin\\theta}$", "$\\dfrac{1}{\\cos\\theta}$",
+                "$\\dfrac{1}{\\tan\\theta}$", "$\\cos\\theta$",
+                "$\\sin\\theta$", "$\\dfrac{\\cos\\theta}{\\sin\\theta}$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Reciprocal identities" },
         { type: "line", text: "sec θ = 1 / cos θ" }
-      ]
-    },
-    {
-      title: "5. Cotangent definition",
-      prompt: "Memorize cot θ.",
+      ] },
+    { title: "5. Cotangent definition", prompt: "Memorize cot θ.",
       problem: "$\\cot\\theta = \\; ?$",
-      options: ["$\\dfrac{1}{\\sin\\theta}$", "$\\dfrac{1}{\\cos\\theta}$", "$\\dfrac{1}{\\tan\\theta}$", "$\\tan\\theta$", "$\\sin\\theta\\cos\\theta$", "$\\cos\\theta - \\sin\\theta$"],
+      options: ["$\\dfrac{1}{\\sin\\theta}$", "$\\dfrac{1}{\\cos\\theta}$",
+                "$\\dfrac{1}{\\tan\\theta}$", "$\\tan\\theta$",
+                "$\\sin\\theta\\cos\\theta$", "$\\cos\\theta - \\sin\\theta$"],
       correctIndex: 2,
       reference: [
         { type: "head", text: "Reciprocal identities" },
         { type: "line", text: "cot θ = 1 / tan θ" },
-        { type: "line", text: "Also cot θ = cos θ / sin θ" }
-      ]
-    },
-    {
-      title: "6. Odd identity",
-      prompt: "Memorize the odd property of sine.",
+        { type: "line", text: "Also: cot θ = cos θ / sin θ" }
+      ] },
+    { title: "6. Odd identity", prompt: "Memorize sin(−x).",
       problem: "$\\sin(-x) = \\; ?$",
       options: ["$\\sin x$", "$-\\sin x$", "$\\cos x$", "$-\\cos x$", "$0$", "$1$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Even / odd" },
-        { type: "line", text: "sin(−x) = −sin x   (odd)" },
-        { type: "line", text: "cos(−x) = cos x    (even)" },
-        { type: "line", text: "tan(−x) = −tan x   (odd)" }
-      ]
-    },
-    {
-      title: "7. Even identity",
-      prompt: "Memorize the even property of cosine.",
+        { type: "line", text: "sin(−x) = −sin x  (odd)" },
+        { type: "line", text: "cos(−x) = cos x   (even)" },
+        { type: "line", text: "tan(−x) = −tan x  (odd)" }
+      ] },
+    { title: "7. Even identity", prompt: "Memorize cos(−x).",
       problem: "$\\cos(-x) = \\; ?$",
       options: ["$\\sin x$", "$-\\sin x$", "$\\cos x$", "$-\\cos x$", "$0$", "$1$"],
       correctIndex: 2,
       reference: [
         { type: "head", text: "Even / odd" },
-        { type: "line", text: "cos(−x) = cos x (even)" }
-      ]
-    },
-    {
-      title: "8. Period",
-      prompt: "Memorize the period of sine and cosine.",
+        { type: "line", text: "cos(−x) = cos x" }
+      ] },
+    { title: "8. Period", prompt: "Memorize the period of sin and cos.",
       problem: "$\\text{Period of } \\sin x \\text{ and } \\cos x = \\; ?$",
       options: ["$\\pi/2$", "$\\pi$", "$2\\pi$", "$1$", "$2$", "$4\\pi$"],
       correctIndex: 2,
@@ -802,80 +848,63 @@ makeDropdownStage({
         { type: "head", text: "Periodicity" },
         { type: "line", text: "sin(x + 2π) = sin x" },
         { type: "line", text: "cos(x + 2π) = cos x" },
-        { type: "line", text: "Period of sin and cos is 2π." },
-        { type: "line", text: "Period of tan is π." }
-      ]
-    }
+        { type: "line", text: "Period = 2π.  Period of tan = π." }
+      ] }
   ]
 });
 
 /* =========================================================
    STAGE 2 — Identities
    ========================================================= */
-makeDropdownStage({
+makeChoiceStage({
   id: "s2",
   questions: [
-    {
-      title: "1. Pythagorean identity",
-      prompt: "Memorize the tangent-squared identity.",
+    { title: "1. Tangent-squared identity", prompt: "Memorize 1 + tan²θ.",
       problem: "$1 + \\tan^2\\theta = \\; ?$",
-      options: ["$\\csc^2\\theta$", "$\\sec^2\\theta$", "$\\cot^2\\theta$", "$\\sin^2\\theta$", "$\\cos^2\\theta$", "$1$"],
+      options: ["$\\csc^2\\theta$", "$\\sec^2\\theta$", "$\\cot^2\\theta$",
+                "$\\sin^2\\theta$", "$\\cos^2\\theta$", "$1$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Pythagorean identities" },
         { type: "line", text: "sin²θ + cos²θ = 1" },
         { type: "line", text: "1 + tan²θ = sec²θ" },
         { type: "line", text: "1 + cot²θ = csc²θ" }
-      ]
-    },
-    {
-      title: "2. Pythagorean identity",
-      prompt: "Memorize the cotangent-squared identity.",
+      ] },
+    { title: "2. Cotangent-squared identity", prompt: "Memorize 1 + cot²θ.",
       problem: "$1 + \\cot^2\\theta = \\; ?$",
-      options: ["$\\sec^2\\theta$", "$\\csc^2\\theta$", "$\\tan^2\\theta$", "$1$", "$0$", "$\\cos^2\\theta$"],
+      options: ["$\\sec^2\\theta$", "$\\csc^2\\theta$", "$\\tan^2\\theta$",
+                "$1$", "$0$", "$\\cos^2\\theta$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Pythagorean identities" },
         { type: "line", text: "1 + cot²θ = csc²θ" }
-      ]
-    },
-    {
-      title: "3. Double angle — sine",
-      prompt: "Memorize sin(2x).",
+      ] },
+    { title: "3. Double angle — sine", prompt: "Memorize sin(2x).",
       problem: "$\\sin(2x) = \\; ?$",
-      options: ["$2\\sin x\\cos x$", "$\\sin x\\cos x$", "$\\cos^2 x - \\sin^2 x$", "$2\\cos x$", "$\\sin^2 x + \\cos^2 x$", "$1 - 2\\sin^2 x$"],
+      options: ["$2\\sin x\\cos x$", "$\\sin x\\cos x$", "$\\cos^2 x - \\sin^2 x$",
+                "$2\\cos x$", "$\\sin^2 x + \\cos^2 x$", "$1 - 2\\sin^2 x$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Double angle" },
         { type: "line", text: "sin(2x) = 2 sin x cos x" },
         { type: "line", text: "cos(2x) = cos²x − sin²x" }
-      ]
-    },
-    {
-      title: "4. Double angle — cosine",
-      prompt: "Memorize cos(2x).",
+      ] },
+    { title: "4. Double angle — cosine", prompt: "Memorize cos(2x).",
       problem: "$\\cos(2x) = \\; ?$",
-      options: ["$2\\sin x\\cos x$", "$\\cos^2 x + \\sin^2 x$", "$\\cos^2 x - \\sin^2 x$", "$\\sin^2 x - \\cos^2 x$", "$1 + 2\\sin^2 x$", "$2\\cos^2 x$"],
+      options: ["$2\\sin x\\cos x$", "$\\cos^2 x + \\sin^2 x$", "$\\cos^2 x - \\sin^2 x$",
+                "$\\sin^2 x - \\cos^2 x$", "$1 + 2\\sin^2 x$", "$2\\cos^2 x$"],
       correctIndex: 2,
       reference: [
         { type: "head", text: "Double angle" },
         { type: "line", text: "cos(2x) = cos²x − sin²x" },
         { type: "line", text: "cos(2x) = 2cos²x − 1" },
         { type: "line", text: "cos(2x) = 1 − 2sin²x" }
-      ]
-    },
-    {
-      title: "5. Sum identity — sine",
-      prompt: "Memorize sin(a + b).",
+      ] },
+    { title: "5. Sum identity — sine", prompt: "Memorize sin(a + b).",
       problem: "$\\sin(a + b) = \\; ?$",
-      options: [
-        "$\\sin a\\cos b - \\cos a\\sin b$",
-        "$\\sin a\\cos b + \\cos a\\sin b$",
-        "$\\cos a\\cos b - \\sin a\\sin b$",
-        "$\\cos a\\cos b + \\sin a\\sin b$",
-        "$\\sin a + \\sin b$",
-        "$\\cos a + \\cos b$"
-      ],
+      options: ["$\\sin a\\cos b - \\cos a\\sin b$", "$\\sin a\\cos b + \\cos a\\sin b$",
+                "$\\cos a\\cos b - \\sin a\\sin b$", "$\\cos a\\cos b + \\sin a\\sin b$",
+                "$\\sin a + \\sin b$", "$\\cos a + \\cos b$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Sum and difference" },
@@ -883,74 +912,47 @@ makeDropdownStage({
         { type: "line", text: "sin(a − b) = sin a cos b − cos a sin b" },
         { type: "line", text: "cos(a + b) = cos a cos b − sin a sin b" },
         { type: "line", text: "cos(a − b) = cos a cos b + sin a sin b" }
-      ]
-    },
-    {
-      title: "6. Difference identity — sine",
-      prompt: "Memorize sin(a − b).",
+      ] },
+    { title: "6. Difference identity — sine", prompt: "Memorize sin(a − b).",
       problem: "$\\sin(a - b) = \\; ?$",
-      options: [
-        "$\\sin a\\cos b + \\cos a\\sin b$",
-        "$\\sin a\\cos b - \\cos a\\sin b$",
-        "$\\cos a\\cos b + \\sin a\\sin b$",
-        "$\\cos a\\cos b - \\sin a\\sin b$",
-        "$\\sin a - \\sin b$",
-        "$\\cos a - \\cos b$"
-      ],
+      options: ["$\\sin a\\cos b + \\cos a\\sin b$", "$\\sin a\\cos b - \\cos a\\sin b$",
+                "$\\cos a\\cos b + \\sin a\\sin b$", "$\\cos a\\cos b - \\sin a\\sin b$",
+                "$\\sin a - \\sin b$", "$\\cos a - \\cos b$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Sum and difference" },
         { type: "line", text: "sin(a − b) = sin a cos b − cos a sin b" }
-      ]
-    },
-    {
-      title: "7. Sum identity — cosine",
-      prompt: "Memorize cos(a + b).",
+      ] },
+    { title: "7. Sum identity — cosine", prompt: "Memorize cos(a + b).",
       problem: "$\\cos(a + b) = \\; ?$",
-      options: [
-        "$\\cos a\\cos b + \\sin a\\sin b$",
-        "$\\cos a\\cos b - \\sin a\\sin b$",
-        "$\\sin a\\cos b + \\cos a\\sin b$",
-        "$\\sin a\\cos b - \\cos a\\sin b$",
-        "$\\cos a + \\cos b$",
-        "$\\sin a + \\sin b$"
-      ],
+      options: ["$\\cos a\\cos b + \\sin a\\sin b$", "$\\cos a\\cos b - \\sin a\\sin b$",
+                "$\\sin a\\cos b + \\cos a\\sin b$", "$\\sin a\\cos b - \\cos a\\sin b$",
+                "$\\cos a + \\cos b$", "$\\sin a + \\sin b$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Sum and difference" },
         { type: "line", text: "cos(a + b) = cos a cos b − sin a sin b" }
-      ]
-    },
-    {
-      title: "8. Difference identity — cosine",
-      prompt: "Memorize cos(a − b).",
+      ] },
+    { title: "8. Difference identity — cosine", prompt: "Memorize cos(a − b).",
       problem: "$\\cos(a - b) = \\; ?$",
-      options: [
-        "$\\cos a\\cos b - \\sin a\\sin b$",
-        "$\\cos a\\cos b + \\sin a\\sin b$",
-        "$\\sin a\\cos b + \\cos a\\sin b$",
-        "$\\sin a\\cos b - \\cos a\\sin b$",
-        "$\\cos a - \\cos b$",
-        "$\\sin a - \\sin b$"
-      ],
+      options: ["$\\cos a\\cos b - \\sin a\\sin b$", "$\\cos a\\cos b + \\sin a\\sin b$",
+                "$\\sin a\\cos b + \\cos a\\sin b$", "$\\sin a\\cos b - \\cos a\\sin b$",
+                "$\\cos a - \\cos b$", "$\\sin a - \\sin b$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Sum and difference" },
         { type: "line", text: "cos(a − b) = cos a cos b + sin a sin b" }
-      ]
-    }
+      ] }
   ]
 });
 
 /* =========================================================
    STAGE 3 — Limits & Continuity
    ========================================================= */
-makeDropdownStage({
+makeChoiceStage({
   id: "s3",
   questions: [
-    {
-      title: "1. Key trig limit",
-      prompt: "Memorize this limit.",
+    { title: "1. Key trig limit", prompt: "Memorize this limit.",
       problem: "$\\displaystyle\\lim_{x\\to 0} \\dfrac{\\sin x}{x} = \\; ?$",
       options: ["$0$", "$1$", "$\\infty$", "$-1$", "$\\pi$", "$\\text{DNE}$"],
       correctIndex: 1,
@@ -958,35 +960,25 @@ makeDropdownStage({
         { type: "head", text: "Two critical trig limits" },
         { type: "line", text: "lim(x→0) sin x / x = 1" },
         { type: "line", text: "lim(x→0) (1 − cos x) / x = 0" },
-        { type: "line", text: "Also: lim(x→0) tan x / x = 1" },
-        { type: "line", text: "These limits use radians." }
-      ]
-    },
-    {
-      title: "2. Key trig limit",
-      prompt: "Memorize this limit.",
+        { type: "line", text: "Also: lim(x→0) tan x / x = 1" }
+      ] },
+    { title: "2. Key trig limit", prompt: "Memorize this limit.",
       problem: "$\\displaystyle\\lim_{x\\to 0} \\dfrac{1 - \\cos x}{x} = \\; ?$",
       options: ["$1$", "$0$", "$\\infty$", "$-1$", "$\\pi$", "$\\text{DNE}$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Two critical trig limits" },
         { type: "line", text: "lim(x→0) (1 − cos x) / x = 0" }
-      ]
-    },
-    {
-      title: "3. Key trig limit",
-      prompt: "Memorize this limit.",
+      ] },
+    { title: "3. Key trig limit", prompt: "Memorize this limit.",
       problem: "$\\displaystyle\\lim_{x\\to 0} \\dfrac{\\tan x}{x} = \\; ?$",
       options: ["$0$", "$1$", "$\\infty$", "$-1$", "$\\pi$", "$\\text{DNE}$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Trig limit" },
         { type: "line", text: "lim(x→0) tan x / x = 1" }
-      ]
-    },
-    {
-      title: "4. Polynomial limit theorem",
-      prompt: "Memorize the polynomial limit theorem.",
+      ] },
+    { title: "4. Polynomial limit theorem", prompt: "Memorize it.",
       problem: "$\\displaystyle\\lim_{x\\to a} P(x) = \\; ? \\quad (P \\text{ polynomial})$",
       options: ["$P(a)$", "$0$", "$\\infty$", "$P'(a)$", "$1$", "$\\text{DNE}$"],
       correctIndex: 0,
@@ -994,38 +986,29 @@ makeDropdownStage({
         { type: "head", text: "Polynomial limit theorem" },
         { type: "line", text: "For a polynomial P:" },
         { type: "line", text: "lim(x→a) P(x) = P(a)" },
-        { type: "line", text: "For P(x)/Q(x), provided Q(a) ≠ 0:" },
+        { type: "line", text: "For P(x)/Q(x), if Q(a) ≠ 0:" },
         { type: "line", text: "lim = P(a)/Q(a)" }
-      ]
-    },
-    {
-      title: "5. Limit at infinity",
-      prompt: "Memorize this limit.",
+      ] },
+    { title: "5. Limit at infinity", prompt: "Memorize this limit.",
       problem: "$\\displaystyle\\lim_{x\\to\\infty} \\dfrac{1}{x} = \\; ?$",
       options: ["$1$", "$0$", "$\\infty$", "$-\\infty$", "$\\pi$", "$\\text{DNE}$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Limits at infinity" },
-        { type: "line", text: "lim(x→∞) 1 / x = 0" },
-        { type: "line", text: "lim(x→∞) c / x = 0  for any constant c." }
-      ]
-    },
-    {
-      title: "6. Differentiability",
-      prompt: "Memorize the implication.",
-      problem: "$f \\text{ differentiable at } a \\Rightarrow f \\text{ is } \\; ? \\text{ at } a$",
+        { type: "line", text: "lim(x→∞) 1/x = 0" },
+        { type: "line", text: "lim(x→∞) c/x = 0 for any constant c." }
+      ] },
+    { title: "6. Differentiability", prompt: "Memorize the implication.",
+      problem: "$f \\text{ differentiable at } a \\; \\Rightarrow \\; f \\text{ is } \\; ? \\text{ at } a$",
       options: ["bounded", "continuous", "linear", "even", "integrable", "constant"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Differentiability ⇒ Continuity" },
         { type: "line", text: "f differentiable at a ⇒ f continuous at a" },
         { type: "line", text: "The converse is false." },
-        { type: "line", text: "Example: |x| is continuous at 0 but not differentiable at 0." }
-      ]
-    },
-    {
-      title: "7. Continuity at a point",
-      prompt: "Memorize the three-part definition of continuity.",
+        { type: "line", text: "Example: |x| continuous at 0 but not differentiable." }
+      ] },
+    { title: "7. Continuity at a point", prompt: "Memorize the three-part definition.",
       problem: "$f \\text{ is continuous at } a \\iff \\; ?$",
       options: [
         "$f(a)$ exists",
@@ -1041,34 +1024,29 @@ makeDropdownStage({
         { type: "line", text: "1. f(a) exists" },
         { type: "line", text: "2. lim(x→a) f(x) exists" },
         { type: "line", text: "3. lim(x→a) f(x) = f(a)" }
-      ]
-    },
-    {
-      title: "8. Intermediate Value Theorem",
-      prompt: "Memorize the IVT hypothesis.",
-      problem: "$\\text{IVT: if } f \\text{ is } \\; ? \\text{ on } [a, b] \\text{ then } f \\text{ attains every value between } f(a) \\text{ and } f(b)$",
+      ] },
+    { title: "8. Intermediate Value Theorem", prompt: "Memorize the IVT hypothesis.",
+      problem: "$\\text{IVT requires } f \\text{ to be } \\; ? \\text{ on } [a, b]$",
       options: ["differentiable", "continuous", "linear", "positive", "increasing", "bounded"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Intermediate Value Theorem" },
-        { type: "line", text: "If f is continuous on [a,b] and N lies between f(a) and f(b), then there is c in [a,b] with f(c) = N." },
+        { type: "line", text: "If f is continuous on [a,b] and N is between f(a) and f(b), then there is c in [a,b] with f(c) = N." },
         { type: "line", text: "Root form: if f(a) and f(b) have opposite signs, then f(c) = 0 for some c in (a,b)." }
-      ]
-    }
+      ] }
   ]
 });
 
 /* =========================================================
-   STAGE 4 — Derivatives (basic rules)
+   STAGE 4 — Basic Derivatives
    ========================================================= */
-makeDropdownStage({
+makeChoiceStage({
   id: "s4",
   questions: [
-    {
-      title: "1. Power rule",
-      prompt: "Memorize the power rule.",
+    { title: "1. Power rule", prompt: "Memorize the power rule.",
       problem: "$\\dfrac{d}{dx}\\, x^{n} = \\; ?$",
-      options: ["$n\\,x^{n-1}$", "$x^{n-1}$", "$n\\,x^{n}$", "$\\dfrac{x^{n}}{n}$", "$(n+1)\\,x^{n+1}$", "$n\\,x$"],
+      options: ["$n\\,x^{n-1}$", "$x^{n-1}$", "$n\\,x^{n}$",
+                "$\\dfrac{x^{n}}{n}$", "$(n+1)\\,x^{n+1}$", "$n\\,x$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Basic rules" },
@@ -1076,13 +1054,11 @@ makeDropdownStage({
         { type: "line", text: "d/dx (x^n) = n x^(n−1)" },
         { type: "line", text: "d/dx (c f) = c f′" },
         { type: "line", text: "(f + g)′ = f′ + g′" }
-      ]
-    },
-    {
-      title: "2. Sine derivative",
-      prompt: "Memorize the derivative of sin x.",
+      ] },
+    { title: "2. Sine derivative", prompt: "Memorize d/dx sin x.",
       problem: "$\\dfrac{d}{dx}\\, \\sin x = \\; ?$",
-      options: ["$\\cos x$", "$-\\cos x$", "$\\sin x$", "$-\\sin x$", "$\\sec^2 x$", "$\\tan x$"],
+      options: ["$\\cos x$", "$-\\cos x$", "$\\sin x$",
+                "$-\\sin x$", "$\\sec^2 x$", "$\\tan x$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Trig derivatives" },
@@ -1092,268 +1068,169 @@ makeDropdownStage({
         { type: "line", text: "(cot x)′ = −csc²x" },
         { type: "line", text: "(sec x)′ = sec x tan x" },
         { type: "line", text: "(csc x)′ = −csc x cot x" }
-      ]
-    },
-    {
-      title: "3. Cosine derivative",
-      prompt: "Memorize the derivative of cos x.",
+      ] },
+    { title: "3. Cosine derivative", prompt: "Memorize d/dx cos x.",
       problem: "$\\dfrac{d}{dx}\\, \\cos x = \\; ?$",
-      options: ["$\\sin x$", "$-\\sin x$", "$\\cos x$", "$-\\cos x$", "$\\sec^2 x$", "$-\\csc^2 x$"],
+      options: ["$\\sin x$", "$-\\sin x$", "$\\cos x$",
+                "$-\\cos x$", "$\\sec^2 x$", "$-\\csc^2 x$"],
       correctIndex: 1,
       reference: [
         { type: "head", text: "Trig derivatives" },
         { type: "line", text: "(cos x)′ = −sin x" }
-      ]
-    },
-    {
-      title: "4. Tangent derivative",
-      prompt: "Memorize the derivative of tan x.",
+      ] },
+    { title: "4. Tangent derivative", prompt: "Memorize d/dx tan x.",
       problem: "$\\dfrac{d}{dx}\\, \\tan x = \\; ?$",
-      options: ["$\\sec^2 x$", "$-\\sec^2 x$", "$\\csc^2 x$", "$-\\csc^2 x$", "$\\sec x \\tan x$", "$\\cot x$"],
+      options: ["$\\sec^2 x$", "$-\\sec^2 x$", "$\\csc^2 x$",
+                "$-\\csc^2 x$", "$\\sec x \\tan x$", "$\\cot x$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Trig derivatives" },
         { type: "line", text: "(tan x)′ = sec²x" }
-      ]
-    },
-    {
-      title: "5. Exponential derivative",
-      prompt: "Memorize the derivative of e^x.",
+      ] },
+    { title: "5. Exponential derivative", prompt: "Memorize d/dx e^x.",
       problem: "$\\dfrac{d}{dx}\\, e^{x} = \\; ?$",
-      options: ["$e^{x}$", "$x\\,e^{x-1}$", "$\\ln x$", "$\\dfrac{1}{x}$", "$e^{x+1}$", "$x\\,e^{x}$"],
+      options: ["$e^{x}$", "$x\\,e^{x-1}$", "$\\ln x$",
+                "$\\dfrac{1}{x}$", "$e^{x+1}$", "$x\\,e^{x}$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Exponential" },
         { type: "line", text: "d/dx (e^x) = e^x" },
-        { type: "line", text: "d/dx (e^u) = e^u u′" },
         { type: "line", text: "d/dx (a^x) = a^x ln a" }
-      ]
-    },
-    {
-      title: "6. Logarithm derivative",
-      prompt: "Memorize the derivative of ln x.",
+      ] },
+    { title: "6. Logarithm derivative", prompt: "Memorize d/dx ln x.",
       problem: "$\\dfrac{d}{dx}\\, \\ln x = \\; ?$",
-      options: ["$\\dfrac{1}{x}$", "$x$", "$\\ln x$", "$e^{x}$", "$\\dfrac{1}{\\ln x}$", "$x\\ln x$"],
+      options: ["$\\dfrac{1}{x}$", "$x$", "$\\ln x$",
+                "$e^{x}$", "$\\dfrac{1}{\\ln x}$", "$x\\ln x$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Logarithm" },
-        { type: "line", text: "d/dx (ln x) = 1 / x" },
-        { type: "line", text: "d/dx (ln |u|) = u′ / u" },
-        { type: "line", text: "d/dx (log_a x) = 1 / (x ln a)" }
-      ]
-    },
-    {
-      title: "7. Product rule",
-      prompt: "Memorize the product rule.",
+        { type: "line", text: "d/dx (ln x) = 1/x" },
+        { type: "line", text: "d/dx (ln |u|) = u′/u" }
+      ] },
+    { title: "7. Product rule", prompt: "Memorize the product rule.",
       problem: "$(f \\cdot g)' = \\; ?$",
-      options: [
-        "$f'g + fg'$",
-        "$f'g'$",
-        "$fg' + f'g'$",
-        "$f'g - fg'$",
-        "$(f' + g')(f + g)$",
-        "$\\dfrac{f'}{g'}$"
-      ],
+      options: ["$f'g + fg'$", "$f'g'$", "$fg' + f'g'$",
+                "$f'g - fg'$", "$(f' + g')(f + g)$", "$\\dfrac{f'}{g'}$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Product rule" },
-        { type: "line", text: "(f g)′ = f′ g + f g′" },
-        { type: "line", text: "Memory: first d × second + first × second d." }
-      ]
-    },
-    {
-      title: "8. Quotient rule",
-      prompt: "Memorize the quotient rule.",
+        { type: "line", text: "(f g)′ = f′g + fg′" },
+        { type: "line", text: "Memory: first d × second + first × second d" }
+      ] },
+    { title: "8. Quotient rule", prompt: "Memorize the quotient rule.",
       problem: "$\\left(\\dfrac{f}{g}\\right)' = \\; ?$",
-      options: [
-        "$\\dfrac{gf' - fg'}{g^{2}}$",
-        "$\\dfrac{fg' - gf'}{g^{2}}$",
-        "$\\dfrac{f'g + fg'}{g^{2}}$",
-        "$\\dfrac{f'}{g'}$",
-        "$\\dfrac{f - g}{g^{2}}$",
-        "$\\dfrac{f' - g'}{g^{2}}$"
-      ],
+      options: ["$\\dfrac{gf' - fg'}{g^{2}}$", "$\\dfrac{fg' - gf'}{g^{2}}$",
+                "$\\dfrac{f'g + fg'}{g^{2}}$", "$\\dfrac{f'}{g'}$",
+                "$\\dfrac{f - g}{g^{2}}$", "$\\dfrac{f' - g'}{g^{2}}$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Quotient rule" },
-        { type: "line", text: "(f / g)′ = (g f′ − f g′) / g²" },
-        { type: "line", text: "Memory: low d-high minus high d-low, over low squared." }
-      ]
-    }
+        { type: "line", text: "(f/g)′ = (g f′ − f g′)/g²" },
+        { type: "line", text: "Memory: low d-high minus high d-low, over low squared" }
+      ] }
   ]
 });
 
 /* =========================================================
-   STAGE 5 — Chain Rule (NEW)
+   STAGE 5 — Chain Rule
    ========================================================= */
-makeDropdownStage({
+makeChoiceStage({
   id: "s5",
   questions: [
-    {
-      title: "1. Chain rule — statement",
-      prompt: "Memorize the chain rule.",
+    { title: "1. Chain rule — statement", prompt: "Memorize the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, f(g(x)) = \\; ?$",
-      options: [
-        "$f'(g(x)) \\cdot g'(x)$",
-        "$f'(g(x)) + g'(x)$",
-        "$f(g'(x)) \\cdot g(x)$",
-        "$f'(x) \\cdot g'(x)$",
-        "$f'(g(x))$",
-        "$f(g(x)) \\cdot g'(x)$"
-      ],
+      options: ["$f'(g(x)) \\cdot g'(x)$", "$f'(g(x)) + g'(x)$", "$f(g'(x)) \\cdot g(x)$",
+                "$f'(x) \\cdot g'(x)$", "$f'(g(x))$", "$f(g(x)) \\cdot g'(x)$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule" },
         { type: "line", text: "d/dx [f(g(x))] = f′(g(x)) · g′(x)" },
-        { type: "line", text: "Leibniz form: dy/dx = (dy/du)(du/dx)" }
-      ]
-    },
-    {
-      title: "2. Chain rule — power of a function",
-      prompt: "Apply the chain rule to a power.",
+        { type: "line", text: "Leibniz: dy/dx = (dy/du)(du/dx)" }
+      ] },
+    { title: "2. Power of a function", prompt: "Apply the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, (3x^2 + 1)^5 = \\; ?$",
-      options: [
-        "$5(3x^2 + 1)^4 \\cdot 6x$",
-        "$5(3x^2 + 1)^4$",
-        "$5(6x)^4$",
-        "$(3x^2 + 1)^4 \\cdot 6x$",
-        "$5(3x^2 + 1)^5 \\cdot 6x$",
-        "$30x(3x^2 + 1)^4$"
-      ],
+      options: ["$5(3x^2 + 1)^4 \\cdot 6x$", "$5(3x^2 + 1)^4$", "$5(6x)^4$",
+                "$(3x^2 + 1)^4 \\cdot 6x$", "$5(3x^2 + 1)^5 \\cdot 6x$", "$30x(3x^2 + 1)^4$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule" },
         { type: "line", text: "Outer: ( )^5 → 5( )^4" },
         { type: "line", text: "Inner: 3x² + 1 → 6x" },
         { type: "line", text: "Multiply: 5(3x² + 1)^4 · 6x" }
-      ]
-    },
-    {
-      title: "3. Chain rule — sine of a function",
-      prompt: "Apply the chain rule.",
+      ] },
+    { title: "3. Sine of a function", prompt: "Apply the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, \\sin(2x) = \\; ?$",
-      options: [
-        "$2\\cos(2x)$",
-        "$\\cos(2x)$",
-        "$-2\\cos(2x)$",
-        "$-\\cos(2x)$",
-        "$2\\sin(2x)$",
-        "$\\cos(2)$"
-      ],
+      options: ["$2\\cos(2x)$", "$\\cos(2x)$", "$-2\\cos(2x)$",
+                "$-\\cos(2x)$", "$2\\sin(2x)$", "$\\cos(2)$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule with trig" },
         { type: "line", text: "d/dx sin(u) = cos(u) · u′" },
         { type: "line", text: "Here u = 2x, u′ = 2" },
         { type: "line", text: "Result: 2 cos(2x)" }
-      ]
-    },
-    {
-      title: "4. Chain rule — exponential",
-      prompt: "Apply the chain rule.",
+      ] },
+    { title: "4. Exponential", prompt: "Apply the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, e^{3x} = \\; ?$",
-      options: [
-        "$3e^{3x}$",
-        "$e^{3x}$",
-        "$e^{3}$",
-        "$3x\\,e^{3x-1}$",
-        "$\\dfrac{1}{3}e^{3x}$",
-        "$e^{3x} + 3$"
-      ],
+      options: ["$3e^{3x}$", "$e^{3x}$", "$e^{3}$",
+                "$3x\\,e^{3x-1}$", "$\\dfrac{1}{3}e^{3x}$", "$e^{3x} + 3$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule with exponential" },
         { type: "line", text: "d/dx e^u = e^u · u′" },
         { type: "line", text: "Here u = 3x, u′ = 3" },
         { type: "line", text: "Result: 3e^(3x)" }
-      ]
-    },
-    {
-      title: "5. Chain rule — logarithm",
-      prompt: "Apply the chain rule.",
+      ] },
+    { title: "5. Logarithm", prompt: "Apply the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, \\ln(x^2) = \\; ?$",
-      options: [
-        "$\\dfrac{2}{x}$",
-        "$\\dfrac{1}{x^2}$",
-        "$\\dfrac{1}{2x}$",
-        "$2x$",
-        "$\\dfrac{2x}{x^2 + 1}$",
-        "$\\ln(2x)$"
-      ],
+      options: ["$\\dfrac{2}{x}$", "$\\dfrac{1}{x^2}$", "$\\dfrac{1}{2x}$",
+                "$2x$", "$\\dfrac{2x}{x^2 + 1}$", "$\\ln(2x)$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule with log" },
-        { type: "line", text: "d/dx ln(u) = u′ / u" },
+        { type: "line", text: "d/dx ln(u) = u′/u" },
         { type: "line", text: "Here u = x², u′ = 2x" },
-        { type: "line", text: "Result: 2x / x² = 2 / x" }
-      ]
-    },
-    {
-      title: "6. Chain rule — outside in",
-      prompt: "Identify the outer and inner functions.",
-      problem: "$y = \\sqrt{1 + x^2} \\;\\; \\Rightarrow \\;\\; y' = \\; ?$",
-      options: [
-        "$\\dfrac{x}{\\sqrt{1 + x^2}}$",
-        "$\\dfrac{1}{2\\sqrt{1 + x^2}}$",
-        "$\\dfrac{2x}{\\sqrt{1 + x^2}}$",
-        "$\\sqrt{2x}$",
-        "$\\dfrac{1}{\\sqrt{1 + x^2}}$",
-        "$2x\\sqrt{1 + x^2}$"
-      ],
+        { type: "line", text: "Result: 2x/x² = 2/x" }
+      ] },
+    { title: "6. Square root", prompt: "Apply the chain rule.",
+      problem: "$y = \\sqrt{1 + x^2} \\;\\Rightarrow\\; y' = \\; ?$",
+      options: ["$\\dfrac{x}{\\sqrt{1 + x^2}}$", "$\\dfrac{1}{2\\sqrt{1 + x^2}}$",
+                "$\\dfrac{2x}{\\sqrt{1 + x^2}}$", "$\\sqrt{2x}$",
+                "$\\dfrac{1}{\\sqrt{1 + x^2}}$", "$2x\\sqrt{1 + x^2}$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule" },
         { type: "line", text: "Rewrite: (1 + x²)^(1/2)" },
-        { type: "line", text: "Outer derivative: (1/2)(1+x²)^(−1/2)" },
-        { type: "line", text: "Inner derivative: 2x" },
+        { type: "line", text: "Outer: (1/2)(1 + x²)^(−1/2)" },
+        { type: "line", text: "Inner: 2x" },
         { type: "line", text: "Multiply: x / √(1 + x²)" }
-      ]
-    },
-    {
-      title: "7. Chain rule — product inside",
-      prompt: "Apply the chain rule.",
+      ] },
+    { title: "7. Cosine of a function", prompt: "Apply the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, \\cos(x^2 + 1) = \\; ?$",
-      options: [
-        "$-2x\\sin(x^2 + 1)$",
-        "$-\\sin(x^2 + 1)$",
-        "$2x\\sin(x^2 + 1)$",
-        "$-2x\\cos(x^2 + 1)$",
-        "$-\\sin(2x)$",
-        "$-2x\\sin(x)$"
-      ],
+      options: ["$-2x\\sin(x^2 + 1)$", "$-\\sin(x^2 + 1)$", "$2x\\sin(x^2 + 1)$",
+                "$-2x\\cos(x^2 + 1)$", "$-\\sin(2x)$", "$-2x\\sin(x)$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule with trig" },
         { type: "line", text: "d/dx cos(u) = −sin(u) · u′" },
         { type: "line", text: "Here u = x² + 1, u′ = 2x" },
         { type: "line", text: "Result: −2x sin(x² + 1)" }
-      ]
-    },
-    {
-      title: "8. Chain rule — combined",
-      prompt: "Apply the chain rule.",
+      ] },
+    { title: "8. Combined", prompt: "Apply the chain rule.",
       problem: "$\\dfrac{d}{dx}\\, (5x - 2)^4 = \\; ?$",
-      options: [
-        "$20(5x - 2)^3$",
-        "$4(5x - 2)^3$",
-        "$4(5x)^3$",
-        "$20(5x - 2)^4$",
-        "$5(5x - 2)^3$",
-        "$(5x - 2)^3$"
-      ],
+      options: ["$20(5x - 2)^3$", "$4(5x - 2)^3$", "$4(5x)^3$",
+                "$20(5x - 2)^4$", "$5(5x - 2)^3$", "$(5x - 2)^3$"],
       correctIndex: 0,
       reference: [
         { type: "head", text: "Chain rule" },
         { type: "line", text: "Outer: 4(5x − 2)^3" },
-        { type: "line", text: "Inner: derivative of 5x − 2 is 5" },
+        { type: "line", text: "Inner: 5" },
         { type: "line", text: "Multiply: 20(5x − 2)^3" }
-      ]
-    }
+      ] }
   ]
 });
 
 /* =========================================================
-   STAGE 6 — Unit Circle drag & drop
+   STAGE 6 — Unit Circle (fixed bottom bank, tap-to-place)
    ========================================================= */
 (function () {
   var ANGLES = [
@@ -1374,15 +1251,17 @@ makeDropdownStage({
     { deg: 315, rad: "7π/4",   cos: "√2/2",  sin: "-√2/2" },
     { deg: 330, rad: "11π/6",  cos: "√3/2",  sin: "-1/2" }
   ];
-
   var UNIQUE_VALUES = ["1", "1/2", "√2/2", "√3/2", "0", "-1", "-1/2", "-√2/2", "-√3/2"];
 
+  /* 50% closer: gap was 260, now 130. */
   var CX = 500, CY = 500;
-  var R_CIRCLE = 170, R_LABEL = 245, R_PAIR = 430;
+  var R_CIRCLE = 170;
+  var R_LABEL = 245;
+  var R_PAIR = 300;
 
   var totalSlots = ANGLES.length * 2;
   var placedCount = 0;
-  var draggingValue = null;
+  var selectedValue = null;
   var allDone = false;
 
   function polar(r, deg) {
@@ -1460,6 +1339,7 @@ makeDropdownStage({
     slot.dataset.kind = kind;
     slot.innerHTML = '<span class="uc-slot-value">?</span>';
 
+    /* desktop HTML5 drag */
     slot.addEventListener("dragover", function (e) {
       if (allDone) return;
       if (slot.classList.contains("filled")) return;
@@ -1472,25 +1352,45 @@ makeDropdownStage({
       slot.classList.remove("dragover");
       if (allDone) return;
       if (slot.classList.contains("filled")) return;
-      if (!draggingValue) return;
+      if (!selectedValue) return;
+      attemptPlace(slot, selectedValue);
+    });
 
-      if (draggingValue === slot.dataset.answer) {
-        slot.querySelector(".uc-slot-value").textContent = draggingValue;
-        slot.classList.add("filled");
-        placedCount++;
-        updateProgress();
-        if (placedCount === totalSlots) {
-          allDone = true;
-          showFeedback($("s6-feedback"), "ok", "All 32 slots placed!",
-            "You filled every cosine and sine slot correctly.");
-        }
-      } else {
-        slot.classList.add("wrong");
-        setTimeout(function () { slot.classList.remove("wrong"); }, 500);
+    /* touch / click place */
+    slot.addEventListener("click", function () {
+      if (allDone) return;
+      if (slot.classList.contains("filled")) return;
+      if (!selectedValue) {
+        var hint = $("fixedBankHint");
+        hint.textContent = "Tap a chip first, then tap a slot";
+        hint.style.color = "var(--bad)";
+        setTimeout(function () {
+          hint.textContent = "Tap a chip, then tap a slot";
+          hint.style.color = "";
+        }, 1400);
+        return;
       }
+      attemptPlace(slot, selectedValue);
     });
 
     return slot;
+  }
+
+  function attemptPlace(slot, value) {
+    if (value === slot.dataset.answer) {
+      slot.querySelector(".uc-slot-value").textContent = value;
+      slot.classList.add("filled");
+      placedCount++;
+      updateProgress();
+      if (placedCount === totalSlots) {
+        allDone = true;
+        showFeedback($("s6-feedback"), "ok", "All 32 slots placed!",
+          "You filled every cosine and sine slot correctly.");
+      }
+    } else {
+      slot.classList.add("wrong");
+      setTimeout(function () { slot.classList.remove("wrong"); }, 500);
+    }
   }
 
   function buildBank() {
@@ -1506,15 +1406,28 @@ makeDropdownStage({
         chip.textContent = val;
 
         chip.addEventListener("dragstart", function (e) {
-          draggingValue = val;
+          selectedValue = val;
           chip.classList.add("dragging");
           e.dataTransfer.setData("text/plain", val);
           e.dataTransfer.effectAllowed = "copy";
         });
         chip.addEventListener("dragend", function () {
           chip.classList.remove("dragging");
-          draggingValue = null;
         });
+
+        chip.addEventListener("click", function () {
+          var alreadySelected = chip.classList.contains("selected");
+          bank.querySelectorAll(".uc-chip").forEach(function (c) {
+            c.classList.remove("selected");
+          });
+          if (alreadySelected) {
+            selectedValue = null;
+          } else {
+            chip.classList.add("selected");
+            selectedValue = val;
+          }
+        });
+
         bank.appendChild(chip);
       })(shuffled[i]);
     }
@@ -1524,20 +1437,41 @@ makeDropdownStage({
     $("s6-progress").textContent = placedCount + " / " + totalSlots + " placed";
   }
 
+  function scaleStage() {
+    var wrap = $("s6-stage-wrap");
+    var stage = $("s6-stage");
+    if (!wrap || !stage) return;
+    var wrapWidth = wrap.clientWidth;
+    var baseWidth = 1000;
+    if (wrapWidth < baseWidth) {
+      var scale = wrapWidth / baseWidth;
+      stage.style.transform = "scale(" + scale + ")";
+      wrap.style.height = (1000 * scale) + "px";
+    } else {
+      stage.style.transform = "";
+      wrap.style.height = "";
+    }
+  }
+
   function init() {
     placedCount = 0;
     allDone = false;
-    draggingValue = null;
+    selectedValue = null;
     buildStage();
     buildBank();
     updateProgress();
     hideFeedback($("s6-feedback"));
+    scaleStage();
   }
 
   init();
+  window.addEventListener("resize", scaleStage);
 
   var s6Tab = document.querySelector('.tab-btn[data-stage="s6"]');
-  if (s6Tab) s6Tab.addEventListener("click", typeset);
+  if (s6Tab) s6Tab.addEventListener("click", function () {
+    scaleStage();
+    typeset();
+  });
 })();
 
 window.addEventListener("load", typeset);
